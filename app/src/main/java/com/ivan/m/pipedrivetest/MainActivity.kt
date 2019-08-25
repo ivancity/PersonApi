@@ -12,7 +12,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.ivan.m.pipedrivetest.detail.ItemDetailActivity
 import com.ivan.m.pipedrivetest.detail.ItemDetailFragment
 
 import com.ivan.m.pipedrivetest.dummy.DummyContent
@@ -22,16 +21,6 @@ import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.person_list_layout.*
 
-
-
-/**
- * An activity representing a list of Pings. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a [ItemDetailActivity] representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 class MainActivity : AppCompatActivity() {
 
     private val personViewModel: PersonViewModel by lazy {
@@ -53,6 +42,13 @@ class MainActivity : AppCompatActivity() {
         personViewModel.initListView(person_detail_container)
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.setDisplayShowHomeEnabled(false)
+        return true
+    }
+
     private fun subscribe() {
         val setupListObserver = Observer<Boolean> {this.setPersonListFragment()}
         personViewModel.setupList.observe(this, setupListObserver)
@@ -60,8 +56,8 @@ class MainActivity : AppCompatActivity() {
         val goToDetailViewObserver = Observer<DummyContent.DummyItem> {this.setPersonDetailFragment(it)}
         personViewModel.goToDetailView.observe(this, goToDetailViewObserver)
 
-        val goToDetailActivityObserver = Observer<DummyContent.DummyItem> {this.goToDetailActivity(it)}
-        personViewModel.goToDetailActivity.observe(this, goToDetailActivityObserver)
+        val navigateToDetailsObserver = Observer<DummyContent.DummyItem> {this.navigateToDetails(it)}
+        personViewModel.navigateToDetails.observe(this, navigateToDetailsObserver)
     }
 
     private fun setPersonListFragment() {
@@ -70,19 +66,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setPersonDetailFragment(of: DummyContent.DummyItem) {
-        val fragment = ItemDetailFragment().apply {
+        val fragment = getDetailFragment(of)
+        goTo(fragment, R.id.person_detail_container)
+    }
+
+    private fun navigateToDetails(of: DummyContent.DummyItem) {
+        val fragment = getDetailFragment(of)
+        val transaction = supportFragmentManager.beginTransaction().apply {
+            replace(R.id.person_list_container, fragment)
+            addToBackStack(null)
+        }
+        transaction.commit()
+    }
+
+    private fun getDetailFragment(of: DummyContent.DummyItem) : Fragment {
+        return ItemDetailFragment().apply {
             arguments = Bundle().apply {
                 putString(ItemDetailFragment.ARG_ITEM_ID, of.id)
             }
         }
-        goTo(fragment, R.id.person_detail_container)
-    }
-
-    private fun goToDetailActivity(using: DummyContent.DummyItem) {
-        val intent = Intent(this, ItemDetailActivity::class.java).apply {
-            putExtra(ItemDetailFragment.ARG_ITEM_ID, using.id)
-        }
-        startActivity(intent)
     }
 
     private fun goTo(fragment: Fragment, withResLayout: Int) {

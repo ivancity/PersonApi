@@ -19,8 +19,8 @@ class PersonViewModel : ViewModel() {
     private val _goToDetailView = MutableLiveData<DummyContent.DummyItem>()
     val goToDetailView: LiveData<DummyContent.DummyItem> = _goToDetailView
 
-    private val _goToDetailActivity = MutableLiveData<DummyContent.DummyItem>()
-    val goToDetailActivity: LiveData<DummyContent.DummyItem> = _goToDetailActivity
+    private val _navigateToDetails = MutableLiveData<DummyContent.DummyItem>()
+    val navigateToDetails: LiveData<DummyContent.DummyItem> = _navigateToDetails
 
 
     fun initListView(detailContainer: View?) {
@@ -40,7 +40,7 @@ class PersonViewModel : ViewModel() {
         if (twoPane) {
             _goToDetailView.value = using
         } else {
-            _goToDetailActivity.value = using
+            _navigateToDetails.value = using
         }
     }
 
