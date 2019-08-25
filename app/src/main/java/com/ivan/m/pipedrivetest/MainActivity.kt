@@ -9,11 +9,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.ivan.m.pipedrivetest.detail.ItemDetailActivity
+import com.ivan.m.pipedrivetest.detail.ItemDetailFragment
 
 import com.ivan.m.pipedrivetest.dummy.DummyContent
+import com.ivan.m.pipedrivetest.persons.PersonListFragment
+import com.ivan.m.pipedrivetest.persons.PersonViewModel
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list_content.view.*
-import kotlinx.android.synthetic.main.item_list.*
+import kotlinx.android.synthetic.main.person_list_layout.*
+
+
 
 /**
  * An activity representing a list of Pings. This activity
@@ -24,6 +32,10 @@ import kotlinx.android.synthetic.main.item_list.*
  * item details side-by-side using two vertical panes.
  */
 class MainActivity : AppCompatActivity() {
+
+    private val personViewModel: PersonViewModel by lazy {
+        ViewModelProviders.of(this).get(PersonViewModel::class.java)
+    }
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -42,23 +54,25 @@ class MainActivity : AppCompatActivity() {
                 .setAction("Action", null).show()
         }
 
-        if (item_detail_container != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            twoPane = true
-        }
-
-        setupRecyclerView(item_list)
+        subscribe()
+        personViewModel.initListView(person_detail_container)
     }
 
-    private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
+    private fun subscribe() {
+        val setupListObserver = Observer<Boolean> {this.setPersonListFragment()}
+        personViewModel.setupList.observe(this, setupListObserver)
+    }
+
+    private fun setPersonListFragment() {
+        val listFragment = PersonListFragment.newInstance()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.person_list_container, listFragment)
+            .commit()
     }
 
     class SimpleItemRecyclerViewAdapter(
-        private val parentActivity: MainActivity,
+        private val parentActivity: AppCompatActivity,
         private val values: List<DummyContent.DummyItem>,
         private val twoPane: Boolean
     ) :
@@ -77,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     parentActivity.supportFragmentManager
                         .beginTransaction()
-                        .replace(R.id.item_detail_container, fragment)
+                        .replace(R.id.person_detail_container, fragment)
                         .commit()
                 } else {
                     val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
