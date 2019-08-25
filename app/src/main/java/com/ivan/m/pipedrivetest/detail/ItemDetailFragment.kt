@@ -5,32 +5,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.ivan.m.pipedrivetest.MainActivity
 import com.ivan.m.pipedrivetest.R
 import com.ivan.m.pipedrivetest.dummy.DummyContent
+import com.ivan.m.pipedrivetest.persons.PersonViewModel
 import kotlinx.android.synthetic.main.activity_item_detail.*
 import kotlinx.android.synthetic.main.activity_item_list.*
+import kotlinx.android.synthetic.main.item_detail.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 
 class ItemDetailFragment : Fragment() {
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private var item: DummyContent.DummyItem? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            if (it.containsKey(ARG_ITEM_ID)) {
-                // Load the dummy content specified by the fragment
-                // arguments. In a real-world scenario, use a Loader
-                // to load content from a content provider.
-                item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
-                activity?.toolbar_layout?.title = item?.content
-            }
-        }
+    private val personViewModel: PersonViewModel by lazy {
+        activity?.run {
+            ViewModelProviders.of(this).get(PersonViewModel::class.java)
+        } ?: throw Exception("Invalid Activity")
     }
 
     override fun onCreateView(
@@ -39,15 +30,37 @@ class ItemDetailFragment : Fragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.item_detail, container, false)
 
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (activity as MainActivity).supportActionBar?.setDisplayShowHomeEnabled(true)
+        subscribe()
 
-        // Show the dummy content as text in a TextView.
-        item?.let {
-            rootView.item_detail.text = it.details
+        arguments?.let {
+            if (it.containsKey(ARG_ITEM_ID)) {
+                // Load the dummy content specified by the fragment
+                // arguments. In a real-world scenario, use a Loader
+                // to load content from a content provider.
+                val item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
+                personViewModel.initDetailView(item)
+            }
         }
 
         return rootView
+    }
+
+    private fun subscribe() {
+        val updateToolbarObserver = Observer<String> {this.updateToolbar(it)}
+        personViewModel.updateToolbarTitle.observe(this, updateToolbarObserver)
+
+        val updateDetailContentObserver = Observer<DummyContent.DummyItem> {this.updateContent(it)}
+        personViewModel.updateDetailContent.observe(this, updateDetailContentObserver)
+    }
+
+    private fun updateContent(item: DummyContent.DummyItem) {
+        item_detail.text = item.details
+    }
+
+    private fun updateToolbar(withTitle: String) {
+        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as MainActivity).supportActionBar?.setDisplayShowHomeEnabled(true)
+        (activity as MainActivity).supportActionBar?.title = withTitle
     }
 
     companion object {

@@ -10,22 +10,36 @@ class PersonViewModel : ViewModel() {
 
     private var twoPane: Boolean = false
 
+    private var detailItem: DummyContent.DummyItem? = null
+
     private val _setupList = MutableLiveData<Boolean>()
     val setupList: LiveData<Boolean> = _setupList
 
     private val _setupPersonRecycler = MutableLiveData<Boolean>()
     val setupPersonRecycler: LiveData<Boolean> = _setupPersonRecycler
 
-    private val _goToDetailView = MutableLiveData<DummyContent.DummyItem>()
-    val goToDetailView: LiveData<DummyContent.DummyItem> = _goToDetailView
+    private val _showDetailView = MutableLiveData<DummyContent.DummyItem>()
+    val showDetailView: LiveData<DummyContent.DummyItem> = _showDetailView
 
     private val _navigateToDetails = MutableLiveData<DummyContent.DummyItem>()
     val navigateToDetails: LiveData<DummyContent.DummyItem> = _navigateToDetails
+
+    private val _updateToolbarTitle = MutableLiveData<String>()
+    val updateToolbarTitle: LiveData<String> = _updateToolbarTitle
+
+    private val _updateDetailContent = MutableLiveData<DummyContent.DummyItem>()
+    val updateDetailContent: LiveData<DummyContent.DummyItem> = _updateDetailContent
 
 
     fun initListView(detailContainer: View?) {
         setTwoPane(detailContainer)
         _setupList.value = true
+    }
+
+    fun initDetailView(using: DummyContent.DummyItem?) {
+        detailItem = using
+        updateToolbarUi(using)
+        updateDetailsUi(using)
     }
 
     fun initPersonListFragment() {
@@ -38,7 +52,7 @@ class PersonViewModel : ViewModel() {
         }
 
         if (twoPane) {
-            _goToDetailView.value = using
+            _showDetailView.value = using
         } else {
             _navigateToDetails.value = using
         }
@@ -52,6 +66,27 @@ class PersonViewModel : ViewModel() {
             // activity should be in two-pane mode.
             twoPane = true
         }
+    }
+
+    private fun updateDetailsUi(using: DummyContent.DummyItem?) {
+        if (using == null) {
+            return
+        }
+        _updateDetailContent.value = using
+    }
+
+    private fun updateToolbarUi(using: DummyContent.DummyItem?) {
+        if (twoPane) {
+            return
+        }
+
+        if (using == null) {
+            // clear UI
+            _updateToolbarTitle.value = ""
+            return
+        }
+
+        _updateToolbarTitle.value = using.content
     }
 
 }

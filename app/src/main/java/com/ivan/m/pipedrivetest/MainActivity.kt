@@ -1,6 +1,5 @@
 package com.ivan.m.pipedrivetest
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -46,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         onBackPressed()
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar?.setDisplayShowHomeEnabled(false)
+        supportActionBar?.title = title
         return true
     }
 
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         personViewModel.setupList.observe(this, setupListObserver)
 
         val goToDetailViewObserver = Observer<DummyContent.DummyItem> {this.setPersonDetailFragment(it)}
-        personViewModel.goToDetailView.observe(this, goToDetailViewObserver)
+        personViewModel.showDetailView.observe(this, goToDetailViewObserver)
 
         val navigateToDetailsObserver = Observer<DummyContent.DummyItem> {this.navigateToDetails(it)}
         personViewModel.navigateToDetails.observe(this, navigateToDetailsObserver)
