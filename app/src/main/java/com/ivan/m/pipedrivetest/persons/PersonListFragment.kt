@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -22,7 +21,9 @@ class PersonListFragment : Fragment() {
     }
 
     private val personViewModel: PersonViewModel by lazy {
-        ViewModelProviders.of(this).get(PersonViewModel::class.java)
+        activity?.run {
+            ViewModelProviders.of(this).get(PersonViewModel::class.java)
+        } ?: throw Exception("Invalid Activity")
     }
 
     override fun onCreateView(
@@ -39,13 +40,13 @@ class PersonListFragment : Fragment() {
     }
 
     private fun subscribe() {
-        val setupRecyclerView = Observer<Boolean> { this.setupRecyclerView(person_list_recycler, it) }
-        personViewModel.setupRecycler.observe(this, setupRecyclerView)
+        val setupRecyclerView = Observer<Boolean> { this.setupRecyclerView(person_list_recycler) }
+        personViewModel.setupPersonRecycler.observe(this, setupRecyclerView)
     }
 
-    private fun setupRecyclerView(recyclerView: RecyclerView, hasTwoPane: Boolean) {
+    private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter =
-            MainActivity.SimpleItemRecyclerViewAdapter(activity as AppCompatActivity, DummyContent.ITEMS, hasTwoPane)
+            MainActivity.SimpleItemRecyclerViewAdapter(personViewModel, DummyContent.ITEMS)
     }
 
 }

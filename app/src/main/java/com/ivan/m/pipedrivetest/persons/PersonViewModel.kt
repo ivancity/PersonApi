@@ -4,6 +4,7 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ivan.m.pipedrivetest.dummy.DummyContent
 
 class PersonViewModel : ViewModel() {
 
@@ -13,7 +14,14 @@ class PersonViewModel : ViewModel() {
     val setupList: LiveData<Boolean> = _setupList
 
     private val _setupPersonRecycler = MutableLiveData<Boolean>()
-    val setupRecycler: LiveData<Boolean> = _setupPersonRecycler
+    val setupPersonRecycler: LiveData<Boolean> = _setupPersonRecycler
+
+    private val _goToDetailView = MutableLiveData<DummyContent.DummyItem>()
+    val goToDetailView: LiveData<DummyContent.DummyItem> = _goToDetailView
+
+    private val _goToDetailActivity = MutableLiveData<DummyContent.DummyItem>()
+    val goToDetailActivity: LiveData<DummyContent.DummyItem> = _goToDetailActivity
+
 
     fun initListView(detailContainer: View?) {
         setTwoPane(detailContainer)
@@ -22,6 +30,18 @@ class PersonViewModel : ViewModel() {
 
     fun initPersonListFragment() {
         _setupPersonRecycler.value = twoPane
+    }
+
+    fun handlePersonItemClick(using: DummyContent.DummyItem?) {
+        if (using == null) {
+            return
+        }
+
+        if (twoPane) {
+            _goToDetailView.value = using
+        } else {
+            _goToDetailActivity.value = using
+        }
     }
 
     private fun setTwoPane(detailContainer: View?) {
@@ -33,6 +53,5 @@ class PersonViewModel : ViewModel() {
             twoPane = true
         }
     }
-
 
 }

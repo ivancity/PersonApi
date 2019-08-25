@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ivan.m.pipedrivetest.detail.ItemDetailActivity
@@ -37,12 +38,6 @@ class MainActivity : AppCompatActivity() {
         ViewModelProviders.of(this).get(PersonViewModel::class.java)
     }
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private var twoPane: Boolean = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_list)
@@ -61,20 +56,45 @@ class MainActivity : AppCompatActivity() {
     private fun subscribe() {
         val setupListObserver = Observer<Boolean> {this.setPersonListFragment()}
         personViewModel.setupList.observe(this, setupListObserver)
+
+        val goToDetailViewObserver = Observer<DummyContent.DummyItem> {this.setPersonDetailFragment(it)}
+        personViewModel.goToDetailView.observe(this, goToDetailViewObserver)
+
+        val goToDetailActivityObserver = Observer<DummyContent.DummyItem> {this.goToDetailActivity(it)}
+        personViewModel.goToDetailActivity.observe(this, goToDetailActivityObserver)
     }
 
     private fun setPersonListFragment() {
-        val listFragment = PersonListFragment.newInstance()
+        val fragment = PersonListFragment.newInstance()
+        goTo(fragment, R.id.person_list_container)
+    }
+
+    private fun setPersonDetailFragment(of: DummyContent.DummyItem) {
+        val fragment = ItemDetailFragment().apply {
+            arguments = Bundle().apply {
+                putString(ItemDetailFragment.ARG_ITEM_ID, of.id)
+            }
+        }
+        goTo(fragment, R.id.person_detail_container)
+    }
+
+    private fun goToDetailActivity(using: DummyContent.DummyItem) {
+        val intent = Intent(this, ItemDetailActivity::class.java).apply {
+            putExtra(ItemDetailFragment.ARG_ITEM_ID, using.id)
+        }
+        startActivity(intent)
+    }
+
+    private fun goTo(fragment: Fragment, withResLayout: Int) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.person_list_container, listFragment)
+            .replace(withResLayout, fragment)
             .commit()
     }
 
     class SimpleItemRecyclerViewAdapter(
-        private val parentActivity: AppCompatActivity,
-        private val values: List<DummyContent.DummyItem>,
-        private val twoPane: Boolean
+        private val viewModel: PersonViewModel,
+        private val values: List<DummyContent.DummyItem>
     ) :
         RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
@@ -83,22 +103,7 @@ class MainActivity : AppCompatActivity() {
         init {
             onClickListener = View.OnClickListener { v ->
                 val item = v.tag as DummyContent.DummyItem
-                if (twoPane) {
-                    val fragment = ItemDetailFragment().apply {
-                        arguments = Bundle().apply {
-                            putString(ItemDetailFragment.ARG_ITEM_ID, item.id)
-                        }
-                    }
-                    parentActivity.supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.person_detail_container, fragment)
-                        .commit()
-                } else {
-                    val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
-                        putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id)
-                    }
-                    v.context.startActivity(intent)
-                }
+                viewModel.handlePersonItemClick(item)
             }
         }
 
