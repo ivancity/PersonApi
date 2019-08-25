@@ -1,7 +1,6 @@
 package com.ivan.m.pipedrivetest.services
 
 import com.ivan.m.pipedrivetest.models.PersonsResponse
-import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
