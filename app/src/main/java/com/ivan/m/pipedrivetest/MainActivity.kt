@@ -6,7 +6,6 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.ivan.m.pipedrivetest.data.DatabaseService
 import com.ivan.m.pipedrivetest.detail.ItemDetailFragment
 
@@ -17,13 +16,12 @@ import com.ivan.m.pipedrivetest.persons.PersonViewModelFactory
 import com.ivan.m.pipedrivetest.repo.PersonRepository
 import com.ivan.m.pipedrivetest.services.ApiService
 import kotlinx.android.synthetic.main.activity_item_list.*
-import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.person_list_layout.*
 
 class MainActivity : AppCompatActivity() {
 
     private val personViewModel: PersonViewModel by lazy {
-        val repo = PersonRepository(ApiService.pipeDriveApi, DatabaseService.getDatbase(this))
+        val repo = PersonRepository(ApiService.pipeDriveApi, DatabaseService.getDatabase(this))
         val personViewModelFactory = PersonViewModelFactory(repo)
         ViewModelProvider(this, personViewModelFactory)
             .get(PersonViewModel::class.java)

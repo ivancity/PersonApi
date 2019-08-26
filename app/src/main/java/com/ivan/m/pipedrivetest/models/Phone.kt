@@ -1,5 +1,9 @@
 package com.ivan.m.pipedrivetest.models
 
+import androidx.room.Entity
+
+@Entity
 data class Phone(
-    val label: String?,
-    val value: String?)
+    var label: String?,
+    var value: String?,
+    var ownerId: Int?)

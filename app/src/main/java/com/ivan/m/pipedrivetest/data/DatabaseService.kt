@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 
 object DatabaseService {
-    fun getDatbase(context: Context) : AppDatabase {
+    fun getDatabase(context: Context) : AppDatabase {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java, "pipedrive-db"
