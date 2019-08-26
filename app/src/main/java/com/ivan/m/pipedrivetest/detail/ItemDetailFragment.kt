@@ -54,7 +54,7 @@ class ItemDetailFragment : Fragment() {
     }
 
     private fun updateContent(item: Person) {
-        item_detail.text = item.organizationName
+        item_detail.text = item.organizationName ?: getString(R.string.no_organization)
     }
 
     private fun updateToolbar(withTitle: String) {

@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">PipedriveTest</string>
     <string name="title_item_detail">Item Detail</string>
+    <string name="organization">ORGANIZATION</string>
+    <string name="phone">Phone</string>
+    <string name="details">DETAILS</string>
+    <string name="no_organization">No organization is linked to this person.</string>
 </resources>

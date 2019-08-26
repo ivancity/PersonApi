@@ -8,9 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import com.ivan.m.pipedrivetest.MainActivity
 import com.ivan.m.pipedrivetest.R
-import com.ivan.m.pipedrivetest.dummy.DummyContent
 import com.ivan.m.pipedrivetest.models.Person
 
 import kotlinx.android.synthetic.main.person_list_fragment.*
