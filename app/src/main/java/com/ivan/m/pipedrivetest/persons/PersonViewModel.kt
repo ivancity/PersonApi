@@ -5,17 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ivan.m.pipedrivetest.data.DatabaseService
 import com.ivan.m.pipedrivetest.models.Person
 import com.ivan.m.pipedrivetest.models.Phone
 import com.ivan.m.pipedrivetest.repo.PersonRepository
 import com.ivan.m.pipedrivetest.services.ApiService
 import kotlinx.coroutines.launch
 
-class PersonViewModel : ViewModel() {
+class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
 
     private var twoPane: Boolean = false
-
-    private val repository: PersonRepository = PersonRepository(ApiService.pipeDriveApi)
 
     lateinit var selectedPerson: Person
 

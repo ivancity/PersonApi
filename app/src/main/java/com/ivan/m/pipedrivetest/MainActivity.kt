@@ -5,12 +5,17 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.ivan.m.pipedrivetest.data.DatabaseService
 import com.ivan.m.pipedrivetest.detail.ItemDetailFragment
 
 import com.ivan.m.pipedrivetest.models.Person
 import com.ivan.m.pipedrivetest.persons.PersonListFragment
 import com.ivan.m.pipedrivetest.persons.PersonViewModel
+import com.ivan.m.pipedrivetest.persons.PersonViewModelFactory
+import com.ivan.m.pipedrivetest.repo.PersonRepository
+import com.ivan.m.pipedrivetest.services.ApiService
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.person_list_layout.*
@@ -18,7 +23,10 @@ import kotlinx.android.synthetic.main.person_list_layout.*
 class MainActivity : AppCompatActivity() {
 
     private val personViewModel: PersonViewModel by lazy {
-        ViewModelProviders.of(this).get(PersonViewModel::class.java)
+        val repo = PersonRepository(ApiService.pipeDriveApi, DatabaseService.getDatbase(this))
+        val personViewModelFactory = PersonViewModelFactory(repo)
+        ViewModelProvider(this, personViewModelFactory)
+            .get(PersonViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
