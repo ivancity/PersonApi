@@ -55,6 +55,9 @@ class ItemDetailFragment : Fragment() {
 
     private fun updateContent(item: Person) {
         item_detail.text = item.organizationName ?: getString(R.string.no_organization)
+
+        val phoneContent = personViewModel.getPhoneStringFrom(item.phone)
+        item_detail_card_details_phone_content.text = phoneContent
     }
 
     private fun updateToolbar(withTitle: String) {

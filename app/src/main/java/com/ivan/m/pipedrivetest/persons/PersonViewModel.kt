@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ivan.m.pipedrivetest.models.Person
+import com.ivan.m.pipedrivetest.models.Phone
 import com.ivan.m.pipedrivetest.repo.PersonRepository
 import com.ivan.m.pipedrivetest.services.ApiService
 import kotlinx.coroutines.launch
@@ -68,6 +69,39 @@ class PersonViewModel : ViewModel() {
         } else {
             _navigateToDetails.value = using
         }
+    }
+
+    fun getPhoneStringFrom(phones: List<Phone>?) : String{
+        if (phones == null) {
+            return ""
+        }
+
+        if (phones.size == 1) {
+            val item = phones.first()
+            if (item.label == null && (item.value?.isEmpty() != false)) {
+                return "No phones"
+            }
+        }
+
+        var temp = ""
+        for ((index, phone) in phones.withIndex()) {
+
+            if (phone.value == null) {
+                continue
+            }
+            temp += phone.value
+
+            if (phone.label != null) {
+                temp += " (" + phone.label + ")"
+            }
+
+            if (index < phones.size - 1) {
+                temp += "\n"
+            }
+
+        }
+
+        return temp
     }
 
     private fun setTwoPane(detailContainer: View?) {
