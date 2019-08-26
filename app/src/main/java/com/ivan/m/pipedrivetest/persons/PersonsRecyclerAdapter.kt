@@ -20,7 +20,7 @@ class PersonsRecyclerAdapter(
 
     init {
         onClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyContent.DummyItem
+            val item = v.tag as Person
             viewModel.handlePersonItemClick(item)
         }
     }

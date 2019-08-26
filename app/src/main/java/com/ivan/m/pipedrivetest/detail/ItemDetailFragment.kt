@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ivan.m.pipedrivetest.MainActivity
 import com.ivan.m.pipedrivetest.R
-import com.ivan.m.pipedrivetest.dummy.DummyContent
+import com.ivan.m.pipedrivetest.models.Person
 import com.ivan.m.pipedrivetest.persons.PersonViewModel
 import kotlinx.android.synthetic.main.activity_item_detail.*
 import kotlinx.android.synthetic.main.activity_item_list.*
@@ -37,7 +37,7 @@ class ItemDetailFragment : Fragment() {
                 // Load the dummy content specified by the fragment
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
-                val item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
+                val item = it.getString(ARG_ITEM_ID)
                 personViewModel.initDetailView(item)
             }
         }
@@ -49,12 +49,12 @@ class ItemDetailFragment : Fragment() {
         val updateToolbarObserver = Observer<String> {this.updateToolbar(it)}
         personViewModel.updateToolbarTitle.observe(this, updateToolbarObserver)
 
-        val updateDetailContentObserver = Observer<DummyContent.DummyItem> {this.updateContent(it)}
+        val updateDetailContentObserver = Observer<Person> {this.updateContent(it)}
         personViewModel.updateDetailContent.observe(this, updateDetailContentObserver)
     }
 
-    private fun updateContent(item: DummyContent.DummyItem) {
-        item_detail.text = item.details
+    private fun updateContent(item: Person) {
+        item_detail.text = item.organizationName
     }
 
     private fun updateToolbar(withTitle: String) {

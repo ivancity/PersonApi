@@ -5,21 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ivan.m.pipedrivetest.dummy.DummyContent
 import com.ivan.m.pipedrivetest.models.Person
 import com.ivan.m.pipedrivetest.repo.PersonRepository
 import com.ivan.m.pipedrivetest.services.ApiService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PersonViewModel : ViewModel() {
 
     private var twoPane: Boolean = false
 
-    private var detailItem: DummyContent.DummyItem? = null
-
     private val repository: PersonRepository = PersonRepository(ApiService.pipeDriveApi)
+
+    lateinit var selectedPerson: Person
 
     private val _setupList = MutableLiveData<Boolean>()
     val setupList: LiveData<Boolean> = _setupList
@@ -27,17 +24,17 @@ class PersonViewModel : ViewModel() {
     private val _setupPersonRecycler = MutableLiveData<List<Person>>()
     val setupPersonRecycler: LiveData<List<Person>> = _setupPersonRecycler
 
-    private val _showDetailView = MutableLiveData<DummyContent.DummyItem>()
-    val showDetailView: LiveData<DummyContent.DummyItem> = _showDetailView
+    private val _showDetailView = MutableLiveData<Person>()
+    val showDetailView: LiveData<Person> = _showDetailView
 
-    private val _navigateToDetails = MutableLiveData<DummyContent.DummyItem>()
-    val navigateToDetails: LiveData<DummyContent.DummyItem> = _navigateToDetails
+    private val _navigateToDetails = MutableLiveData<Person>()
+    val navigateToDetails: LiveData<Person> = _navigateToDetails
 
     private val _updateToolbarTitle = MutableLiveData<String>()
     val updateToolbarTitle: LiveData<String> = _updateToolbarTitle
 
-    private val _updateDetailContent = MutableLiveData<DummyContent.DummyItem>()
-    val updateDetailContent: LiveData<DummyContent.DummyItem> = _updateDetailContent
+    private val _updateDetailContent = MutableLiveData<Person>()
+    val updateDetailContent: LiveData<Person> = _updateDetailContent
 
     private val _loadPersonsOnList = MutableLiveData<List<Person>>()
     val loadPersonsOnList: LiveData<List<Person>> = _loadPersonsOnList
@@ -47,10 +44,9 @@ class PersonViewModel : ViewModel() {
         _setupList.value = true
     }
 
-    fun initDetailView(using: DummyContent.DummyItem?) {
-        detailItem = using
-        updateToolbarUi(using)
-        updateDetailsUi(using)
+    fun initDetailView(selectedId: String?) {
+        updateToolbarUi(selectedPerson)
+        updateDetailsUi(selectedPerson)
     }
 
     fun initPersonListFragment() {
@@ -60,10 +56,12 @@ class PersonViewModel : ViewModel() {
         fetchPersons()
     }
 
-    fun handlePersonItemClick(using: DummyContent.DummyItem?) {
+    fun handlePersonItemClick(using: Person?) {
         if (using == null) {
             return
         }
+
+        selectedPerson = using
 
         if (twoPane) {
             _showDetailView.value = using
@@ -82,14 +80,14 @@ class PersonViewModel : ViewModel() {
         }
     }
 
-    private fun updateDetailsUi(using: DummyContent.DummyItem?) {
+    private fun updateDetailsUi(using: Person?) {
         if (using == null) {
             return
         }
         _updateDetailContent.value = using
     }
 
-    private fun updateToolbarUi(using: DummyContent.DummyItem?) {
+    private fun updateToolbarUi(using: Person?) {
         if (twoPane) {
             return
         }
@@ -100,7 +98,7 @@ class PersonViewModel : ViewModel() {
             return
         }
 
-        _updateToolbarTitle.value = using.content
+        _updateToolbarTitle.value = using.name
     }
 
     private fun fetchPersons() {

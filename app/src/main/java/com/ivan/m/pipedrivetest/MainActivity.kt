@@ -2,18 +2,13 @@ package com.ivan.m.pipedrivetest
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ivan.m.pipedrivetest.detail.ItemDetailFragment
 
-import com.ivan.m.pipedrivetest.dummy.DummyContent
+import com.ivan.m.pipedrivetest.models.Person
 import com.ivan.m.pipedrivetest.persons.PersonListFragment
 import com.ivan.m.pipedrivetest.persons.PersonViewModel
 import kotlinx.android.synthetic.main.activity_item_list.*
@@ -53,10 +48,10 @@ class MainActivity : AppCompatActivity() {
         val setupListObserver = Observer<Boolean> {this.setPersonListFragment()}
         personViewModel.setupList.observe(this, setupListObserver)
 
-        val goToDetailViewObserver = Observer<DummyContent.DummyItem> {this.setPersonDetailFragment(it)}
+        val goToDetailViewObserver = Observer<Person> {this.setPersonDetailFragment(it)}
         personViewModel.showDetailView.observe(this, goToDetailViewObserver)
 
-        val navigateToDetailsObserver = Observer<DummyContent.DummyItem> {this.navigateToDetails(it)}
+        val navigateToDetailsObserver = Observer<Person> {this.navigateToDetails(it)}
         personViewModel.navigateToDetails.observe(this, navigateToDetailsObserver)
     }
 
@@ -65,12 +60,12 @@ class MainActivity : AppCompatActivity() {
         goTo(fragment, R.id.person_list_container)
     }
 
-    private fun setPersonDetailFragment(of: DummyContent.DummyItem) {
+    private fun setPersonDetailFragment(of: Person) {
         val fragment = getDetailFragment(of)
         goTo(fragment, R.id.person_detail_container)
     }
 
-    private fun navigateToDetails(of: DummyContent.DummyItem) {
+    private fun navigateToDetails(of: Person) {
         val fragment = getDetailFragment(of)
         val transaction = supportFragmentManager.beginTransaction().apply {
             replace(R.id.person_list_container, fragment)
@@ -79,10 +74,10 @@ class MainActivity : AppCompatActivity() {
         transaction.commit()
     }
 
-    private fun getDetailFragment(of: DummyContent.DummyItem) : Fragment {
+    private fun getDetailFragment(of: Person) : Fragment {
         return ItemDetailFragment().apply {
             arguments = Bundle().apply {
-                putString(ItemDetailFragment.ARG_ITEM_ID, of.id)
+                putString(ItemDetailFragment.ARG_ITEM_ID, of.id.toString())
             }
         }
     }
