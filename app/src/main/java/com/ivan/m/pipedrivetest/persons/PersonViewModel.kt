@@ -24,8 +24,8 @@ class PersonViewModel : ViewModel() {
     private val _setupList = MutableLiveData<Boolean>()
     val setupList: LiveData<Boolean> = _setupList
 
-    private val _setupPersonRecycler = MutableLiveData<Boolean>()
-    val setupPersonRecycler: LiveData<Boolean> = _setupPersonRecycler
+    private val _setupPersonRecycler = MutableLiveData<List<Person>>()
+    val setupPersonRecycler: LiveData<List<Person>> = _setupPersonRecycler
 
     private val _showDetailView = MutableLiveData<DummyContent.DummyItem>()
     val showDetailView: LiveData<DummyContent.DummyItem> = _showDetailView
@@ -54,7 +54,8 @@ class PersonViewModel : ViewModel() {
     }
 
     fun initPersonListFragment() {
-        _setupPersonRecycler.value = twoPane
+        // list init no data so far
+        _setupPersonRecycler.value = null
 
         fetchPersons()
     }

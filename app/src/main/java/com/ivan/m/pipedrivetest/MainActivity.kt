@@ -93,44 +93,4 @@ class MainActivity : AppCompatActivity() {
             .replace(withResLayout, fragment)
             .commit()
     }
-
-    class SimpleItemRecyclerViewAdapter(
-        private val viewModel: PersonViewModel,
-        private val values: List<DummyContent.DummyItem>
-    ) :
-        RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
-
-        private val onClickListener: View.OnClickListener
-
-        init {
-            onClickListener = View.OnClickListener { v ->
-                val item = v.tag as DummyContent.DummyItem
-                viewModel.handlePersonItemClick(item)
-            }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_list_content, parent, false)
-            return ViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = values[position]
-            holder.idView.text = item.id
-            holder.contentView.text = item.content
-
-            with(holder.itemView) {
-                tag = item
-                setOnClickListener(onClickListener)
-            }
-        }
-
-        override fun getItemCount() = values.size
-
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val idView: TextView = view.id_text
-            val contentView: TextView = view.content
-        }
-    }
 }

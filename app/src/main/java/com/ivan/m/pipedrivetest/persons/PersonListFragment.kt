@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ivan.m.pipedrivetest.MainActivity
 import com.ivan.m.pipedrivetest.R
 import com.ivan.m.pipedrivetest.dummy.DummyContent
+import com.ivan.m.pipedrivetest.models.Person
 
 import kotlinx.android.synthetic.main.person_list_fragment.*
 
@@ -19,6 +20,8 @@ class PersonListFragment : Fragment() {
     companion object {
         fun newInstance() = PersonListFragment()
     }
+
+    private lateinit var recyclerAdapter: PersonsRecyclerAdapter
 
     private val personViewModel: PersonViewModel by lazy {
         activity?.run {
@@ -40,13 +43,20 @@ class PersonListFragment : Fragment() {
     }
 
     private fun subscribe() {
-        val setupRecyclerView = Observer<Boolean> { this.setupRecyclerView(person_list_recycler) }
+        val setupRecyclerView = Observer<List<Person>?> { this.setupRecyclerView(person_list_recycler, it) }
         personViewModel.setupPersonRecycler.observe(this, setupRecyclerView)
+
+        val loadPersonsData = Observer<List<Person>> {this.loadPersonsOnList(it)}
+        personViewModel.loadPersonsOnList.observe(this, loadPersonsData)
     }
 
-    private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter =
-            MainActivity.SimpleItemRecyclerViewAdapter(personViewModel, DummyContent.ITEMS)
+    private fun setupRecyclerView(recyclerView: RecyclerView, persons: List<Person>?) {
+        recyclerAdapter = PersonsRecyclerAdapter(personViewModel, persons)
+        recyclerView.adapter = recyclerAdapter
+    }
+
+    private fun loadPersonsOnList(persons: List<Person>) {
+        recyclerAdapter.loadList(persons)
     }
 
 }
