@@ -4,16 +4,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ivan.m.pipedrivetest.R
 import com.ivan.m.pipedrivetest.models.Person
 import kotlinx.android.synthetic.main.item_list_content.view.*
 
 class PersonsRecyclerAdapter(
-    private val viewModel: PersonViewModel,
-    private var values: List<Person>?
+    private val viewModel: PersonViewModel
 ) :
-    RecyclerView.Adapter<PersonsRecyclerAdapter.ViewHolder>() {
+    PagedListAdapter<Person, PersonsRecyclerAdapter.ViewHolder>(REPO_COMPARATOR) {
 
     private val onClickListener: View.OnClickListener
 
@@ -31,31 +32,30 @@ class PersonsRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (values == null) {
-            return
-        }
+        val value = getItem(position) ?: return
 
-        val dataCopy = values
-
-        val item = dataCopy!![position]
-        holder.idView.text = item.id.toString()
-        holder.contentView.text = item.name
+        holder.idView.text = value.id.toString()
+        holder.contentView.text = value.name
 
         with(holder.itemView) {
-            tag = item
+            tag = value
             setOnClickListener(onClickListener)
         }
-    }
-
-    override fun getItemCount() = values?.size ?: 0
-
-    fun loadList(using: List<Person>) {
-        values = using
-        notifyDataSetChanged()
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val idView: TextView = view.id_text
         val contentView: TextView = view.content
     }
+
+    companion object {
+        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<Person>() {
+            override fun areItemsTheSame(oldItem: Person, newItem: Person): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: Person, newItem: Person): Boolean =
+                oldItem == newItem
+        }
+    }
+
 }

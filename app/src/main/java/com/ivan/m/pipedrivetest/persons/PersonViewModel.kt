@@ -1,15 +1,12 @@
 package com.ivan.m.pipedrivetest.persons
 
 import android.view.View
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.ivan.m.pipedrivetest.data.DatabaseService
+import androidx.lifecycle.*
+import androidx.paging.PagedList
 import com.ivan.m.pipedrivetest.models.Person
 import com.ivan.m.pipedrivetest.models.Phone
 import com.ivan.m.pipedrivetest.repo.PersonRepository
-import com.ivan.m.pipedrivetest.services.ApiService
+import com.ivan.m.pipedrivetest.repo.RepoSearchResult
 import kotlinx.coroutines.launch
 
 class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
@@ -39,21 +36,37 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
     private val _loadPersonsOnList = MutableLiveData<List<Person>>()
     val loadPersonsOnList: LiveData<List<Person>> = _loadPersonsOnList
 
+    // LiveData for Pagination
+    private val _queryPersonLiveData = MutableLiveData<Boolean>()
+    private val result: LiveData<RepoSearchResult> = Transformations.map(_queryPersonLiveData) {
+        repository.setPersonsList()
+    }
+    val loadPersonList: LiveData<PagedList<Person>> = Transformations.switchMap(result) { it -> it.data }
+    val networkErrors: LiveData<String> = Transformations.switchMap(result) { it ->
+        it.networkErrors
+    }
+
     fun initListView(detailContainer: View?) {
         setTwoPane(detailContainer)
         _setupList.value = true
     }
 
-    fun initDetailView(selectedId: String?) {
+    fun initDetailView() {
         updateToolbarUi(selectedPerson)
         updateDetailsUi(selectedPerson)
     }
 
     fun initPersonListFragment() {
-        // list init no data so far
         _setupPersonRecycler.value = null
 
-        fetchPersons()
+
+        // TODO when ready put this line back
+//        _queryPersonLiveData.value = true
+
+//        fetchPersons()
+
+
+
     }
 
     fun handlePersonItemClick(using: Person?) {
@@ -101,6 +114,10 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
         }
 
         return temp
+    }
+
+    private fun handleIncomingPersons() {
+
     }
 
     private fun setTwoPane(detailContainer: View?) {

@@ -37,8 +37,8 @@ class ItemDetailFragment : Fragment() {
                 // Load the dummy content specified by the fragment
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
-                val item = it.getString(ARG_ITEM_ID)
-                personViewModel.initDetailView(item)
+                //val item = it.getString(ARG_ITEM_ID)
+                personViewModel.initDetailView()
             }
         }
 

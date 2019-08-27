@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.RecyclerView
 import com.ivan.m.pipedrivetest.R
 import com.ivan.m.pipedrivetest.models.Person
@@ -46,15 +48,28 @@ class PersonListFragment : Fragment() {
 
         val loadPersonsData = Observer<List<Person>> {this.loadPersonsOnList(it)}
         personViewModel.loadPersonsOnList.observe(this, loadPersonsData)
+
+        val displayIncomingPersonObserver = Observer<PagedList<Person>> { displayPersons(it) }
+        personViewModel.loadPersonList.observe(this, displayIncomingPersonObserver)
+
+        personViewModel.networkErrors.observe(this, Observer<String> {
+            Toast.makeText(activity, "Wooops $it", Toast.LENGTH_LONG).show()
+        })
     }
 
+    private fun displayPersons(persons: PagedList<Person>) {
+        recyclerAdapter.submitList(persons)
+    }
+
+
     private fun setupRecyclerView(recyclerView: RecyclerView, persons: List<Person>?) {
-        recyclerAdapter = PersonsRecyclerAdapter(personViewModel, persons)
+//        recyclerAdapter = PersonsRecyclerAdapter(personViewModel, persons)
+        recyclerAdapter = PersonsRecyclerAdapter(personViewModel)
         recyclerView.adapter = recyclerAdapter
     }
 
     private fun loadPersonsOnList(persons: List<Person>) {
-        recyclerAdapter.loadList(persons)
+        // recyclerAdapter.submitList(persons)
     }
 
 }
