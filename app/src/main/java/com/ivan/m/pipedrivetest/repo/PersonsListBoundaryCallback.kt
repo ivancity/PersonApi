@@ -41,14 +41,18 @@ class PersonsListBoundaryCallback(private val pipeDriveApi: PipeDriveApi,
 
 
     private fun dispatchPersonRequest() = GlobalScope.launch(Dispatchers.Main) {
-        val response = fetchPersons()
-        if (!response.isSuccessful) {
-            Log.e("BoundaryCallback", response.message())
-            isLoading = false
-            callback.showLoadingMore(false)
-            handleError("We can't fetch data")
-        } else {
-            saveInDatabase(response.body())
+        try {
+            val response = fetchPersons()
+            if (!response.isSuccessful) {
+                Log.e("BoundaryCallback", response.message())
+                isLoading = false
+                callback.showLoadingMore(false)
+                handleError("We can't fetch data")
+            } else {
+                saveInDatabase(response.body())
+            }
+        } catch (e: Exception) {
+            handleError(e.message ?: "Something went wrong with coroutine in callback.")
         }
     }
 
