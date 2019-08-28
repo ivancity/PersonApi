@@ -43,11 +43,8 @@ class PersonListFragment : Fragment() {
     }
 
     private fun subscribe() {
-        val setupRecyclerView = Observer<List<Person>?> { this.setupRecyclerView(person_list_recycler, it) }
+        val setupRecyclerView = Observer<Boolean> { this.setupRecyclerView(person_list_recycler) }
         personViewModel.setupPersonRecycler.observe(this, setupRecyclerView)
-
-        val loadPersonsData = Observer<List<Person>> {this.loadPersonsOnList(it)}
-        personViewModel.loadPersonsOnList.observe(this, loadPersonsData)
 
         val displayIncomingPersonObserver = Observer<PagedList<Person>> { displayPersons(it) }
         personViewModel.loadPersonList.observe(this, displayIncomingPersonObserver)
@@ -62,14 +59,9 @@ class PersonListFragment : Fragment() {
     }
 
 
-    private fun setupRecyclerView(recyclerView: RecyclerView, persons: List<Person>?) {
-//        recyclerAdapter = PersonsRecyclerAdapter(personViewModel, persons)
+    private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerAdapter = PersonsRecyclerAdapter(personViewModel)
         recyclerView.adapter = recyclerAdapter
-    }
-
-    private fun loadPersonsOnList(persons: List<Person>) {
-        // recyclerAdapter.submitList(persons)
     }
 
 }

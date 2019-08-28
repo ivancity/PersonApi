@@ -13,13 +13,13 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
 
     private var twoPane: Boolean = false
 
-    lateinit var selectedPerson: Person
+    private lateinit var selectedPerson: Person
 
-    private val _setupList = MutableLiveData<Boolean>()
-    val setupList: LiveData<Boolean> = _setupList
+    private val _setupListView = MutableLiveData<Boolean>()
+    val setupList: LiveData<Boolean> = _setupListView
 
-    private val _setupPersonRecycler = MutableLiveData<List<Person>>()
-    val setupPersonRecycler: LiveData<List<Person>> = _setupPersonRecycler
+    private val _setupPersonRecycler = MutableLiveData<Boolean>()
+    val setupPersonRecycler: LiveData<Boolean> = _setupPersonRecycler
 
     private val _showDetailView = MutableLiveData<Person>()
     val showDetailView: LiveData<Person> = _showDetailView
@@ -33,22 +33,23 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
     private val _updateDetailContent = MutableLiveData<Person>()
     val updateDetailContent: LiveData<Person> = _updateDetailContent
 
+    // LiveData without Pagination
     private val _loadPersonsOnList = MutableLiveData<List<Person>>()
-    val loadPersonsOnList: LiveData<List<Person>> = _loadPersonsOnList
 
     // LiveData for Pagination
     private val _queryPersonLiveData = MutableLiveData<Boolean>()
     private val result: LiveData<RepoSearchResult> = Transformations.map(_queryPersonLiveData) {
         repository.setPersonsList()
     }
-    val loadPersonList: LiveData<PagedList<Person>> = Transformations.switchMap(result) { it -> it.data }
+    val loadPersonList: LiveData<PagedList<Person>> = Transformations.switchMap(result) { it ->
+        it.data }
     val networkErrors: LiveData<String> = Transformations.switchMap(result) { it ->
         it.networkErrors
     }
 
     fun initListView(detailContainer: View?) {
         setTwoPane(detailContainer)
-        _setupList.value = true
+        _setupListView.value = true
     }
 
     fun initDetailView() {
@@ -57,7 +58,7 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
     }
 
     fun initPersonListFragment() {
-        _setupPersonRecycler.value = null
+        _setupPersonRecycler.value = true
 
         // use this line if we want to use room, and fetch with pagination
         _queryPersonLiveData.value = true
@@ -115,10 +116,7 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
 
     private fun setTwoPane(detailContainer: View?) {
         if (detailContainer != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
+            // two panes will work if size is (res/values-w900dp).
             twoPane = true
         }
     }

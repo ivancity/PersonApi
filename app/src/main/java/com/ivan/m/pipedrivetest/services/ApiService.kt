@@ -2,6 +2,7 @@ package com.ivan.m.pipedrivetest.services
 
 import com.ivan.m.pipedrivetest.utils.Constants
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
@@ -28,7 +29,7 @@ object ApiService {
         .addInterceptor(authInterceptor)
         .build()
 
-    private fun provideMoshi() : Moshi {
+    fun provideMoshi() : Moshi {
         return Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     }
 

@@ -11,15 +11,19 @@ import kotlinx.coroutines.*
 
 class PersonsListBoundaryCallback(private val pipeDriveApi: PipeDriveApi,
                                   private var nextStart: Int,
+                                  private val pageSize: Int,
                                   private val callback: IncomingPersonsCallback) : PagedList.BoundaryCallback<Person>() {
 
     var isLoading = false
     private var moreItemInCollection = true
-    private var job: Job? = null
 
     private val _networkErrors = MutableLiveData<String>()
     val networkErrors: LiveData<String>
         get() = _networkErrors
+
+    override fun onZeroItemsLoaded() {
+        dispatchPersonRequest()
+    }
 
     override fun onItemAtEndLoaded(itemAtEnd: Person) {
         if (isLoading) {
@@ -32,18 +36,7 @@ class PersonsListBoundaryCallback(private val pipeDriveApi: PipeDriveApi,
 
         callback.showLoadingMore(true)
         isLoading = true
-
-
-        job = dispatchPersonRequest()
-
-//        dispatchPersonRequest2()
-    }
-
-    fun stopBoundaryCallback() {
-        if (job == null) {
-            return
-        }
-        job?.cancel()
+        dispatchPersonRequest()
     }
 
 
@@ -53,32 +46,9 @@ class PersonsListBoundaryCallback(private val pipeDriveApi: PipeDriveApi,
             Log.e("BoundaryCallback", response.message())
             isLoading = false
             callback.showLoadingMore(false)
+            handleError("We can't fetch data")
         } else {
             saveInDatabase(response.body())
-        }
-    }
-
-    private fun dispatchPersonRequest2() = GlobalScope.launch(Dispatchers.Main) {
-        try {
-            val task = async(Dispatchers.IO) {
-                val personsResponse = pipeDriveApi.getPersons(nextStart, 5)
-                personsResponse
-            }
-            val response = withTimeoutOrNull(java.util.concurrent.TimeUnit.SECONDS.toMillis(200L)) {
-                task.await()
-            }
-
-            if (response != null) {
-                if (!response.isSuccessful) {
-                    handleError(response.message())
-                } else {
-                    saveInDatabase(response.body())
-                }
-            } else {
-                handleError("Coroutine timeout fetching persons")
-            }
-        } catch (e: Exception) {
-            handleError(e.message ?: e.toString())
         }
     }
 
@@ -90,7 +60,7 @@ class PersonsListBoundaryCallback(private val pipeDriveApi: PipeDriveApi,
     }
 
     private suspend fun fetchPersons() = withContext(Dispatchers.IO) {
-        val personsResponse = pipeDriveApi.getPersons(nextStart, 5)
+        val personsResponse = pipeDriveApi.getPersons(nextStart, pageSize)
         personsResponse
     }
 

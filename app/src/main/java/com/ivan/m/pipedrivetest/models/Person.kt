@@ -12,6 +12,6 @@ data class Person(
     var name: String?,
     @ColumnInfo(name = "org_name") @Json(name = "org_name") var organizationName: String?,
     @ColumnInfo(name = "owner_name") @Json(name = "owner_name") var ownerName: String?,
-    @Ignore var phone: List<Phone>? = null) {
+    var phone: List<Phone>? = null) {
     constructor() : this(0, "", "", "", null)
 }
