@@ -18,11 +18,7 @@ class PersonRepository(private val pipeDriveApi: PipeDriveApi,
         .build()
 
     private var moreItemInCollection = true
-
-
-
     private var nextStart = 0
-
     private val _incomingPersons = MutableLiveData<PagedList<Person>>()
     var incomingPersons : LiveData<PagedList<Person>> = _incomingPersons
 
@@ -70,5 +66,4 @@ class PersonRepository(private val pipeDriveApi: PipeDriveApi,
 
         return RepoSearchResult(data, networkErrors)
     }
-
 }

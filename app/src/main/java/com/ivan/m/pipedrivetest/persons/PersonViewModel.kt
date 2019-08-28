@@ -59,14 +59,11 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
     fun initPersonListFragment() {
         _setupPersonRecycler.value = null
 
+        // use this line if we want to use room, and fetch with pagination
+        _queryPersonLiveData.value = true
 
-        // TODO when ready put this line back
-//        _queryPersonLiveData.value = true
-
+        // use this line to test the api and only fetch data using coroutines. no database
 //        fetchPersons()
-
-
-
     }
 
     fun handlePersonItemClick(using: Person?) {
@@ -114,10 +111,6 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
         }
 
         return temp
-    }
-
-    private fun handleIncomingPersons() {
-
     }
 
     private fun setTwoPane(detailContainer: View?) {
