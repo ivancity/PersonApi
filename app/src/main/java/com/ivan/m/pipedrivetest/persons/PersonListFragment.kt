@@ -52,6 +52,10 @@ class PersonListFragment : Fragment() {
         personViewModel.networkErrors.observe(this, Observer<String> {
             Toast.makeText(activity, "Wooops $it", Toast.LENGTH_LONG).show()
         })
+
+        personViewModel.showLoading.observe(this, Observer<Boolean> {
+            showLoading(it)
+        })
     }
 
     private fun displayPersons(persons: PagedList<Person>) {
@@ -64,4 +68,11 @@ class PersonListFragment : Fragment() {
         recyclerView.adapter = recyclerAdapter
     }
 
+    private fun showLoading(loading: Boolean) {
+        // In a regular situation we will have a loading fragment dialog, and disable it if we
+        // receive loading as false.
+        if (loading) {
+            Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
+        }
+    }
 }

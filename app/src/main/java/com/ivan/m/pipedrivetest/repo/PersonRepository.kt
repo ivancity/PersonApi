@@ -1,5 +1,7 @@
 package com.ivan.m.pipedrivetest.repo
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.LivePagedListBuilder
 import com.ivan.m.pipedrivetest.data.AppDatabase
 import com.ivan.m.pipedrivetest.models.Person
@@ -9,8 +11,11 @@ import kotlinx.coroutines.*
 class PersonRepository(private val pipeDriveApi: PipeDriveApi,
                        private val pipeDriveDb: AppDatabase) : IncomingPersonsCallback {
 
-    override fun showLoadingMore(loadMore: Boolean) {
+    private val _showLoading = MutableLiveData<Boolean>()
+    val showLoading: LiveData<Boolean> = _showLoading
 
+    override fun showLoadingMore(loadMore: Boolean) {
+        _showLoading.value = loadMore
     }
 
     override fun handleResponse(

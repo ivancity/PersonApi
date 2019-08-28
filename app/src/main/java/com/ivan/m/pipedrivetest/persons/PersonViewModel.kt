@@ -47,6 +47,10 @@ class PersonViewModel(private val repository: PersonRepository) : ViewModel() {
         it.networkErrors
     }
 
+    val showLoading: LiveData<Boolean> = Transformations.map(repository.showLoading) {
+        it
+    }
+
     fun initListView(detailContainer: View?) {
         setTwoPane(detailContainer)
         _setupListView.value = true
